@@ -1,0 +1,292 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import ProductsList from "./ProductsList";
+
+const PAGE_SIZE = 6;
+
+// Simplified helper functions
+const getVal = (value) =>
+  typeof value === "string"
+    ? value
+    : value?.slug || value?._id || value?.name || "";
+
+const getLabel = (value) =>
+  typeof value === "string"
+    ? value
+    : value?.name || value?.slug || value?._id || "";
+
+const getArr = (value) =>
+  (Array.isArray(value) ? value : value ? [value] : [])
+    .map(getVal)
+    .filter(Boolean);
+
+const uniqueOptions = (values) => {
+  const options = new Map();
+  for (const value of values) {
+    const optionValue = getVal(value);
+    if (optionValue && !options.has(optionValue)) {
+      options.set(optionValue, { value: optionValue, label: getLabel(value) });
+    }
+  }
+  return [...options.values()].sort((a, b) =>
+    a.label.localeCompare(b.label)
+  );
+};
+
+export default function ProductCatalog({
+  products = [],
+  path = "",
+  initialFilters = {},
+}) {
+  const router = useRouter();
+  const [filters, setFilters] = useState({
+    category: initialFilters.category || "",
+    subcategory: initialFilters.subcategory || "",
+    subsubcategory: initialFilters.subsubcategory || "",
+    color: "",
+    material: "",
+    maxPrice: "",
+    sort: "",
+  });
+  const [page, setPage] = useState(1);
+  
+  // Filter & Sort Logic
+  const options = useMemo(() => {
+    const categoryProducts = products.filter(
+      (product) =>
+        !filters.category || getVal(product.parent) === filters.category
+    );
+    const subcategoryProducts = categoryProducts.filter(
+      (product) =>
+        !filters.subcategory ||
+        getVal(product.subCategory) === filters.subcategory
+    );
+
+    return {
+      category: uniqueOptions(products.map((product) => product.parent)),
+      subcategory: uniqueOptions(
+        categoryProducts.map((product) => product.subCategory)
+      ),
+      subsubcategory: uniqueOptions(
+        subcategoryProducts.map((product) => product.subsubCategory)
+      ),
+      color: uniqueOptions(products.flatMap((product) => getArr(product.color))),
+      material: uniqueOptions(
+        products.flatMap((product) => getArr(product.material))
+      ),
+    };
+  }, [products, filters.category, filters.subcategory]);
+
+  // Derived select options
+  const filteredProducts = useMemo(() => {
+    const result = products.filter((product) => {
+      const price = Number(product.salePrice ?? product.price);
+      return (
+        (!filters.category || getVal(product.parent) === filters.category) &&
+        (!filters.subcategory ||
+          getVal(product.subCategory) === filters.subcategory) &&
+        (!filters.subsubcategory ||
+          getVal(product.subsubCategory) === filters.subsubcategory) &&
+        (!filters.color || getArr(product.color).includes(filters.color)) &&
+        (!filters.material ||
+          getArr(product.material).includes(filters.material)) &&
+        (!filters.maxPrice ||
+          (Number.isFinite(price) && price <= Number(filters.maxPrice)))
+      );
+    });
+
+    if (filters.sort === "price-asc") {
+      result.sort(
+        (a, b) =>
+          Number(a.salePrice ?? a.price) - Number(b.salePrice ?? b.price)
+      );
+    } else if (filters.sort === "price-desc") {
+      result.sort(
+        (a, b) =>
+          Number(b.salePrice ?? b.price) - Number(a.salePrice ?? a.price)
+      );
+    } else if (filters.sort === "name") {
+      result.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    return result;
+  }, [products, filters]);
+
+  const totalPages = Math.ceil(filteredProducts.length / PAGE_SIZE);
+  const visibleProducts = filteredProducts.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE
+  );
+ 
+  // Automatically clear sub-levels when a parent level changes
+  const updateFilter = (key, value) => {
+    const nextFilters = {
+      ...filters,
+      [key]: value,
+      ...(key === "category"
+        ? { subcategory: "", subsubcategory: "" }
+        : {}),
+      ...(key === "subcategory" ? { subsubcategory: "" } : {}),
+    };
+
+    setFilters(nextFilters);
+    setPage(1);
+
+    const params = new URLSearchParams();
+    ["category", "subcategory", "subsubcategory"].forEach((filterKey) => {
+      if (nextFilters[filterKey]) {
+        params.set(filterKey, nextFilters[filterKey]);
+      }
+    });
+    const query = params.toString();
+    router.replace(query ? `/product?${query}` : "/product", { scroll: false });
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      category: "",
+      subcategory: "",
+      subsubcategory: "",
+      color: "",
+      material: "",
+      maxPrice: "",
+      sort: "",
+    });
+    setPage(1);
+    router.replace("/product", { scroll: false });
+  };
+
+  const selectClass =
+    "mt-1 w-full rounded border border-gray-300 bg-white px-3 py-2 text-sm focus:border-orange-dim focus:outline-none";
+
+  const filterFields = [
+    { key: "category", label: "Category" },
+    { key: "subcategory", label: "Subcategory" },
+    { key: "subsubcategory", label: "Sub-subcategory" },
+    { key: "color", label: "Color" },
+    { key: "material", label: "Material" },
+  ];
+
+  return (
+    <div className="grid grid-cols-1 gap-6 py-6 md:grid-cols-[240px_minmax(0,1fr)]">
+      <aside className="h-fit rounded border border-gray-200 p-4">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="font-playfair text-lg font-semibold">Filter Products</h2>
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="text-sm text-orange-dim hover:underline"
+          >
+            Clear
+          </button>
+        </div>
+
+        {filterFields.map(({ key, label }) => (
+          <label key={key} className="mb-3 block text-sm">
+            {label}
+            <select
+              className={selectClass}
+              value={filters[key]}
+              onChange={(event) => updateFilter(key, event.target.value)}
+            >
+              <option value="">All {label.toLowerCase()}s</option>
+              {options[key].map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        ))}
+
+        <label className="mb-3 block text-sm">
+          Maximum price
+          <input
+            type="number"
+            min="0"
+            inputMode="numeric"
+            placeholder="No limit"
+            className={selectClass}
+            value={filters.maxPrice}
+            onChange={(event) => updateFilter("maxPrice", event.target.value)}
+          />
+        </label>
+      </aside>
+
+      <div className="min-w-0">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-gray-600" aria-live="polite">
+            {filteredProducts.length} product{filteredProducts.length === 1 ? "" : "s"} found
+          </p>
+          <label className="text-sm">
+            Sort by
+            <select
+              className="ml-2 rounded border border-gray-300 bg-white px-3 py-2"
+              value={filters.sort}
+              onChange={(event) => updateFilter("sort", event.target.value)}
+            >
+              <option value="">Default</option>
+              <option value="price-asc">Price: low to high</option>
+              <option value="price-desc">Price: high to low</option>
+              <option value="name">Name</option>
+            </select>
+          </label>
+        </div>
+
+        {visibleProducts.length ? (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <ProductsList data={visibleProducts} path={path} />
+          </div>
+        ) : (
+          <p className="rounded border border-gray-200 p-8 text-center text-gray-600">
+            No products match these filters.
+          </p>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <nav
+            className="mt-6 flex items-center justify-center gap-2"
+            aria-label="Product pages"
+          >
+            <button
+              type="button"
+              disabled={page === 1}
+              onClick={() => setPage((current) => current - 1)}
+              className="rounded border border-gray-300 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Previous
+            </button>
+            {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+              (pageNumber) => (
+                <button
+                  type="button"
+                  key={pageNumber}
+                  aria-current={pageNumber === page ? "page" : undefined}
+                  onClick={() => setPage(pageNumber)}
+                  className={`rounded border px-3 py-2 text-sm ${
+                    pageNumber === page
+                      ? "border-orange-dim bg-orange-dim text-white"
+                      : "border-gray-300"
+                  }`}
+                >
+                  {pageNumber}
+                </button>
+              )
+            )}
+            <button
+              type="button"
+              disabled={page === totalPages}
+              onClick={() => setPage((current) => current + 1)}
+              className="rounded border border-gray-300 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Next
+            </button>
+          </nav>
+        )}
+      </div>
+    </div>
+  );
+}

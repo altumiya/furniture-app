@@ -30,10 +30,7 @@ export default function PrivacyPolicy() {
             <h2 className='font-playfair text-xl mb-5'>Who we are</h2>
             <p className='font-rubik text-md/6 mb-4'>
                 Our website address is:{" "}
-                <Link 
-                    href={"http://localhost:3000/furniture"}
-                    className='text-red-800'
-                >http://localhost/furniture</Link>
+                <Link href="/" className='text-red-800'>Furniture Store</Link>
             </p>
             <h2 className='font-playfair text-xl mb-5'>What personal data we collect and why we collect it</h2>
             <h3 className='font-playfair text-xl mb-5'>Comments</h3>

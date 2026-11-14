@@ -3,8 +3,11 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
-import iziToast from 'izitoast'
 import 'izitoast/dist/css/iziToast.min.css' 
+let iziToast;
+if (typeof window !== 'undefined') {
+  iziToast = require('izitoast');
+}
 export default function RegisterForm() {
   const router = useRouter()
   const [formData, setFormData] = useState({
@@ -23,9 +26,8 @@ export default function RegisterForm() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  // Removed async and dynamic import since iziToast is imported statically at the top
   const showToast = ({ type, title, message }) => {
-    if (typeof window === 'undefined') return
+    if (!iziToast) return
 
     const options = {
       title,

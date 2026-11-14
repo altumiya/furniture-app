@@ -1,4 +1,4 @@
-import ProductsList from '@/app/components/product-component/ProductsList'
+import ProductCatalog from '@/app/components/product-component/ProductCatalog'
 import Link from 'next/link'
 import React from 'react'
 import { MdOutlineKeyboardArrowRight } from 'react-icons/md'
@@ -10,15 +10,6 @@ export default async function Product({ searchParams }) {
   let data = await getProducts();//server side render
   const products = Array.isArray(data?.data) ? data.data : [];
   const filters = await searchParams;
-  const category = filters?.category;
-  const subcategory = filters?.subcategory;
-  const subsubcategory = filters?.subsubcategory;
-  const filteredProducts = products.filter((product) => {
-    if (subsubcategory) return product.subsubCategory?.slug === subsubcategory;
-    if (subcategory) return product.subCategory?.slug === subcategory;
-    if (category) return product.parent?.slug === category;
-    return true;
-  });
 
   return (
     <>
@@ -44,15 +35,17 @@ export default async function Product({ searchParams }) {
 
         {/* grid-cols-[25%_auto] */}
         <section>
-            <div className='grid grid-cols-1 max-w-[1140px] mx-auto'>
-                {/* <aside>
-                    1
-                </aside> */}
-                <div>
-                    <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-1 gap-4 mt-5 mb-5">
-                        <ProductsList data={filteredProducts} path={data?.path || ""} />
-                    </div>
-                </div>
+            <div className='max-w-[1140px] mx-auto px-4'>
+                <ProductCatalog
+                  key={`${filters?.category || ""}:${filters?.subcategory || ""}:${filters?.subsubcategory || ""}`}
+                  products={products}
+                  path={data?.path || ""}
+                  initialFilters={{
+                    category: typeof filters?.category === "string" ? filters.category : "",
+                    subcategory: typeof filters?.subcategory === "string" ? filters.subcategory : "",
+                    subsubcategory: typeof filters?.subsubcategory === "string" ? filters.subsubcategory : "",
+                  }}
+                />
             </div>
             <ToastContainer />
         </section>

@@ -141,17 +141,17 @@ export default function Footer() {
               <li>
                 <div className="grid grid-cols-[30%_auto] gap-2">
                   <div className="simple_product_thumb">
-                      <Link href="http://localhost:3000/product/harper-l-shaped-wooden-sofa-with-drawer">
+                      <Link href="/product">
                           <img src="https://wscubetech.co/Assignments/furniture/storage/app/public/uploads/images/products/1661762520951Group%201.jpg" alt="" />
                       </Link>
                   </div>
                   <div className="simple_product_content">
                       <div className="font-rubik text-sm text-dark-gray">
-                        <Link href={'http://localhost:3000/product/harper-l-shaped-wooden-sofa-with-drawer'}>L Shape Sofa</Link>
+                        <Link href="/product">L Shape Sofa</Link>
                       </div>
                       <div className="product_name">
                           <h3 className='font-playfair text-base text-gray-700 mb-2'>
-                            <Link href={"http://localhost:3000/product/harper-l-shaped-wooden-sofa-with-drawer"}>
+                            <Link href="/product">
                               Harper L Shaped Wooden Sofa with Drawer
                             </Link>
                           </h3>
