@@ -159,7 +159,7 @@ export default function ProductCatalog({
   };
 
   const selectClass =
-    "mt-1 w-full rounded border border-gray-300 bg-white px-3 py-2 text-sm focus:border-orange-dim focus:outline-none";
+    "mt-2 box-border h-11 w-full rounded border border-gray-300 bg-white px-3 text-sm font-normal text-gray-800 focus:border-orange-dim focus:outline-none focus:ring-2 focus:ring-orange-dim/20";
 
   const filterFields = [
     { key: "category", label: "Category" },
@@ -170,22 +170,27 @@ export default function ProductCatalog({
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-6 py-6 md:grid-cols-[240px_minmax(0,1fr)]">
-      <aside className="h-fit rounded border border-gray-200 p-4">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-playfair text-lg font-semibold">Filter Products</h2>
+    <div className="grid grid-cols-1 gap-6 py-6 md:grid-cols-[260px_minmax(0,1fr)]">
+      <aside className="h-fit rounded border border-gray-200 bg-white p-5">
+        <div className="mb-5 flex min-h-9 items-center justify-between gap-3 border-b border-gray-200 pb-3">
+          <h2 className="min-w-0 font-playfair text-lg font-semibold leading-6">
+            Filter Products
+          </h2>
           <button
             type="button"
             onClick={clearFilters}
-            className="text-sm text-orange-dim hover:underline"
+            className="inline-flex shrink-0 items-center justify-center rounded px-2 py-1 text-sm leading-5 text-orange-dim transition-colors hover:bg-orange-dim/10 hover:underline"
           >
             Clear
           </button>
         </div>
 
         {filterFields.map(({ key, label }) => (
-          <label key={key} className="mb-3 block text-sm">
-            {label}
+          <label
+            key={key}
+            className="mb-4 block text-left text-sm font-medium leading-5 text-gray-700 last:mb-4"
+          >
+            <span className="block">{label}</span>
             <select
               className={selectClass}
               value={filters[key]}
@@ -201,8 +206,8 @@ export default function ProductCatalog({
           </label>
         ))}
 
-        <label className="mb-3 block text-sm">
-          Maximum price
+        <label className="mb-0 block text-left text-sm font-medium leading-5 text-gray-700">
+          <span className="block">Maximum price</span>
           <input
             type="number"
             min="0"
