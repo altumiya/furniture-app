@@ -10,6 +10,17 @@ export default async function Product({ searchParams }) {
   let data = await getProducts();//server side render
   const products = Array.isArray(data?.data) ? data.data : [];
   const filters = await searchParams;
+  const initialFilters = Object.fromEntries(
+    [
+      "category",
+      "subcategory",
+      "subsubcategory",
+      "color",
+      "material",
+      "maxPrice",
+      "sort",
+    ].map((key) => [key, typeof filters?.[key] === "string" ? filters[key] : ""])
+  );
 
   return (
     <>
@@ -37,14 +48,10 @@ export default async function Product({ searchParams }) {
         <section>
             <div className='max-w-[1140px] mx-auto px-4'>
                 <ProductCatalog
-                  key={`${filters?.category || ""}:${filters?.subcategory || ""}:${filters?.subsubcategory || ""}`}
+                  key={Object.values(initialFilters).join(":")}
                   products={products}
                   path={data?.path || ""}
-                  initialFilters={{
-                    category: typeof filters?.category === "string" ? filters.category : "",
-                    subcategory: typeof filters?.subcategory === "string" ? filters.subcategory : "",
-                    subsubcategory: typeof filters?.subsubcategory === "string" ? filters.subsubcategory : "",
-                  }}
+                  initialFilters={initialFilters}
                 />
             </div>
             <ToastContainer />

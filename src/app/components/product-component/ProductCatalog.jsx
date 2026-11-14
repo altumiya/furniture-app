@@ -10,17 +10,20 @@ const PAGE_SIZE = 6;
 const getVal = (value) =>
   typeof value === "string"
     ? value
-    : value?.slug || value?._id || value?.name || "";
+    : value?.slug || value?._id || value?.name || ""; //extracts the value used for filtering.
 
 const getLabel = (value) =>
   typeof value === "string"
     ? value
-    : value?.name || value?.slug || value?._id || "";
+    : value?.name || value?.slug || value?._id || ""; //- extracts the name displayed to customers.
+
+const getItems = (value) =>
+  Array.isArray(value) ? value : value ? [value] : [];
 
 const getArr = (value) =>
-  (Array.isArray(value) ? value : value ? [value] : [])
-    .map(getVal)
-    .filter(Boolean);
+  getItems(value) // check something present in array
+    .map(getVal) // extract
+    .filter(Boolean); // remove empty value
 
 const uniqueOptions = (values) => {
   const options = new Map();
@@ -28,10 +31,10 @@ const uniqueOptions = (values) => {
     const optionValue = getVal(value);
     if (optionValue && !options.has(optionValue)) {
       options.set(optionValue, { value: optionValue, label: getLabel(value) });
-    }
+    } //adds a key and value.
   }
   return [...options.values()].sort((a, b) =>
-    a.label.localeCompare(b.label)
+    a.label.localeCompare(b.label) // stor alphabetically
   );
 };
 
@@ -45,10 +48,10 @@ export default function ProductCatalog({
     category: initialFilters.category || "",
     subcategory: initialFilters.subcategory || "",
     subsubcategory: initialFilters.subsubcategory || "",
-    color: "",
-    material: "",
-    maxPrice: "",
-    sort: "",
+    color: initialFilters.color || "",
+    material: initialFilters.material || "",
+    maxPrice: initialFilters.maxPrice || "",
+    sort: initialFilters.sort || "",
   });
   const [page, setPage] = useState(1);
   
@@ -72,9 +75,11 @@ export default function ProductCatalog({
       subsubcategory: uniqueOptions(
         subcategoryProducts.map((product) => product.subsubCategory)
       ),
-      color: uniqueOptions(products.flatMap((product) => getArr(product.color))),
+      color: uniqueOptions(
+        products.flatMap((product) => getItems(product.color))
+      ),
       material: uniqueOptions(
-        products.flatMap((product) => getArr(product.material))
+        products.flatMap((product) => getItems(product.material))
       ),
     };
   }, [products, filters.category, filters.subcategory]);
@@ -93,31 +98,33 @@ export default function ProductCatalog({
         (!filters.material ||
           getArr(product.material).includes(filters.material)) &&
         (!filters.maxPrice ||
-          (Number.isFinite(price) && price <= Number(filters.maxPrice)))
+          (Number.isFinite(price) && price <= Number(filters.maxPrice))) // convert string to number
       );
     });
 
+    const sortedResult = [...result];
     if (filters.sort === "price-asc") {
-      result.sort(
+      sortedResult.sort(
         (a, b) =>
           Number(a.salePrice ?? a.price) - Number(b.salePrice ?? b.price)
       );
     } else if (filters.sort === "price-desc") {
-      result.sort(
+      sortedResult.sort(
         (a, b) =>
           Number(b.salePrice ?? b.price) - Number(a.salePrice ?? a.price)
       );
     } else if (filters.sort === "name") {
-      result.sort((a, b) => a.name.localeCompare(b.name));
+      sortedResult.sort((a, b) => a.name.localeCompare(b.name));
     }
 
-    return result;
-  }, [products, filters]);
+    return sortedResult;
+  }, [products, filters]);  {/* ?? Use salePrice if it isn't null or undefined. Otherwise, use price. */}
 
   const totalPages = Math.ceil(filteredProducts.length / PAGE_SIZE);
+  const currentPage = Math.min(page, totalPages || 1);
   const visibleProducts = filteredProducts.slice(
-    (page - 1) * PAGE_SIZE,
-    page * PAGE_SIZE
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
   );
  
   // Automatically clear sub-levels when a parent level changes
@@ -129,20 +136,24 @@ export default function ProductCatalog({
         ? { subcategory: "", subsubcategory: "" }
         : {}),
       ...(key === "subcategory" ? { subsubcategory: "" } : {}),
-    };
+    }; //if subcat changed or selected the parent get automatically selected
 
     setFilters(nextFilters);
-    setPage(1);
+    setPage(1);  //Whenever a filter changes, return to page 1.
+                //Otherwise, the customer could be on page 5 even though the filtered results contain only one page.
 
     const params = new URLSearchParams();
-    ["category", "subcategory", "subsubcategory"].forEach((filterKey) => {
-      if (nextFilters[filterKey]) {
-        params.set(filterKey, nextFilters[filterKey]);
+    Object.entries(nextFilters).forEach(([filterKey, value]) => {
+      if (value) {
+        params.set(filterKey, value);
       }
     });
     const query = params.toString();
-    router.replace(query ? `/product?${query}` : "/product", { scroll: false });
-  };
+    router.replace(
+      query ? `/product?${query}` : "/product",
+      { scroll: false }
+    );
+  };  //This updates the browser URL without a complete page reload.
 
   const clearFilters = () => {
     setFilters({
@@ -258,8 +269,8 @@ export default function ProductCatalog({
           >
             <button
               type="button"
-              disabled={page === 1}
-              onClick={() => setPage((current) => current - 1)}
+              disabled={currentPage === 1}
+              onClick={() => setPage(currentPage - 1)}
               className="rounded border border-gray-300 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
             >
               Previous
@@ -269,10 +280,10 @@ export default function ProductCatalog({
                 <button
                   type="button"
                   key={pageNumber}
-                  aria-current={pageNumber === page ? "page" : undefined}
+                  aria-current={pageNumber === currentPage ? "page" : undefined}
                   onClick={() => setPage(pageNumber)}
                   className={`rounded border px-3 py-2 text-sm ${
-                    pageNumber === page
+                    pageNumber === currentPage
                       ? "border-orange-dim bg-orange-dim text-white"
                       : "border-gray-300"
                   }`}
@@ -283,8 +294,8 @@ export default function ProductCatalog({
             )}
             <button
               type="button"
-              disabled={page === totalPages}
-              onClick={() => setPage((current) => current + 1)}
+              disabled={currentPage === totalPages}
+              onClick={() => setPage(currentPage + 1)}
               className="rounded border border-gray-300 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
             >
               Next
