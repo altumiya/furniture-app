@@ -102,7 +102,7 @@ export default function ProductCatalog({
       );
     });
 
-    const sortedResult = [...result];
+    const sortedResult = [...result]; // create shallow copy Sorting the copy ensures the original array isn't modified.
     if (filters.sort === "price-asc") {
       sortedResult.sort(
         (a, b) =>
@@ -153,7 +153,7 @@ export default function ProductCatalog({
       query ? `/product?${query}` : "/product",
       { scroll: false }
     );
-  };  //This updates the browser URL without a complete page reload.
+  };  //This updates the browser URL without a complete page reload. This makes filtered product links shareable.
 
   const clearFilters = () => {
     setFilters({
