@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
 import Header from "../components/common/Header";
 import Footer from "../components/common/Footer";
+import ScrollReveal from "../components/common/ScrollReveal";
 import StoreProvider from "./StoreProvider";
 
 
@@ -29,7 +30,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col">
         <StoreProvider>
           <Header />
-          {children}
+          <ScrollReveal>{children}</ScrollReveal>
           <Footer />
         </StoreProvider>
       </body>

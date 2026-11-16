@@ -131,7 +131,7 @@ export default function ProductCard({ productData = {}, path= "" }) {
 
   return (
     <>
-      <div className=" w-[100%] inline-flex px-2 pb-4 ">
+      <div data-scroll-reveal className="w-[100%] inline-flex px-2 pb-4">
         <div className="relative bg-white inline-flex items-stretch w-full h-full p-0 box-border">
           <div className="relative shadow-lg rounded-lg min-w-full flex flex-col">
             <div className="relative">
