@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ProductsList from "./ProductsList";
 import Reveal from "../animations/Reveal";
@@ -56,6 +56,30 @@ export default function ProductCatalog({
   });
   const [page, setPage] = useState(1);
   
+  // Sync state if the user navigates via external links or back button
+  useEffect(() => {
+    setFilters({
+      category: initialFilters.category || "",
+      subcategory: initialFilters.subcategory || "",
+      subsubcategory: initialFilters.subsubcategory || "",
+      color: initialFilters.color || "",
+      material: initialFilters.material || "",
+      maxPrice: initialFilters.maxPrice || "",
+      sort: initialFilters.sort || "",
+    });
+    setPage(1); // Reset to page 1 on new navigation
+  }, [
+    // We list the individual primitive values here so React only runs this 
+    // when the actual filter values from the URL change.
+    initialFilters.category,
+    initialFilters.subcategory,
+    initialFilters.subsubcategory,
+    initialFilters.color,
+    initialFilters.material,
+    initialFilters.maxPrice,
+    initialFilters.sort,
+  ]);
+
   // Filter & Sort Logic
   const options = useMemo(() => {
     const categoryProducts = products.filter(
@@ -150,10 +174,8 @@ export default function ProductCatalog({
       }
     });
     const query = params.toString();
-    router.replace(
-      query ? `/product?${query}` : "/product",
-      { scroll: false }
-    );
+    const newUrl = query ? `/product?${query}` : "/product";
+    window.history.replaceState(null, "", newUrl); //It updates the current browser URL instantly without reloading the page or adding a new entry to the back button history.
   };  //This updates the browser URL without a complete page reload. This makes filtered product links shareable.
 
   const clearFilters = () => {
@@ -167,7 +189,7 @@ export default function ProductCatalog({
       sort: "",
     });
     setPage(1);
-    router.replace("/product", { scroll: false });
+    window.history.replaceState(null, "", "/product"); //It updates the current browser URL instantly without reloading the page or adding a new entry to the back button history.
   };
 
   const selectClass =
