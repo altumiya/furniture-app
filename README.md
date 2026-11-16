@@ -1,36 +1,142 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Furniture App
 
-## Getting Started
+A modern furniture e-commerce storefront built with Next.js and React. The app includes browsing, product details, cart, wishlist, checkout, user authentication flows, and a polished storefront experience for shoppers.
 
-First, run the development server:
+## Overview
+
+This project is a furniture shopping application designed to showcase and sell home and office furniture items. It includes a marketing homepage, category/product browsing, customer testimonials, shopping cart, wishlist, checkout flow, and user account features.
+
+## Features
+
+- Responsive storefront with hero banners and promotional sections
+- Product catalog with featured items and category browsing
+- Product detail pages and shopping flow
+- Cart and wishlist management with Redux state
+- User login/register and password reset flows
+- Checkout and thank-you experience
+- About, FAQ, contact, privacy, and terms pages
+- Animated UI with Framer Motion and Swiper
+- Built with Next.js App Router
+
+## Tech Stack
+
+- Next.js 16
+- React 19
+- Redux Toolkit
+- Tailwind CSS
+- Framer Motion
+- Swiper
+- Axios
+- React Icons
+- SweetAlert2, React Toastify, Izitoast
+
+## Project Structure
+
+```bash
+furniture-app/
+├── public/
+│   ├── about-us/
+│   ├── banner1.webp
+│   ├── banner2.webp
+│   ├── furniture-products.json
+│   ├── logo.png
+│   ├── slider1.jpg
+│   ├── slider2.jpg
+│   ├── slider3.jpg
+│   └── ...
+├── src/
+│   ├── app/
+│   │   ├── (withheader)/
+│   │   │   ├── about-us/
+│   │   │   ├── cart/
+│   │   │   ├── checkout/
+│   │   │   ├── contact-us/
+│   │   │   ├── dashboard/
+│   │   │   ├── login/
+│   │   │   ├── product/
+│   │   │   ├── register/
+│   │   │   ├── wishlist/
+│   │   │   ├── page.js
+│   │   │   └── layout.js
+│   │   ├── (withoutheader)/
+│   │   ├── components/
+│   │   ├── globals.css
+│   │   └── favicon.ico
+│   ├── redux/
+│   │   ├── cartSlice.js
+│   │   ├── store.js
+│   │   ├── userSlice.js
+│   │   └── wishlistSlice.js
+│   └── proxy.js
+├── .gitignore
+├── eslint.config.mjs
+├── jsconfig.json
+├── next.config.mjs
+├── package.json
+├── postcss.config.mjs
+├── README.md
+└── package-lock.json
+```
+
+## Prerequisites
+
+Before running the app, make sure you have:
+
+- Node.js 18 or later
+- npm or yarn
+
+## Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/altumiya/furniture-app.git
+cd furniture-app
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+## Running the App
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open:
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Production Build
 
-## Learn More
+```bash
+npm run build
+npm run start
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Linting
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run lint
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Notes
 
-## Deploy on Vercel
+- The project uses the Next.js App Router and route groups for layout variations.
+- Product data is served from the app and public assets, including a JSON-based catalog.
+- Redux is used for cart, wishlist, and user state management.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project does not currently include a license file. If you are publishing or distributing it, add an appropriate license before release.
+
+## Author
+
+Built for a furniture storefront use case with a modern, responsive e-commerce UI.
