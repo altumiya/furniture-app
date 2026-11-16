@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import ProductsList from "./ProductsList";
+import Reveal from "../animations/Reveal";
 
 const PAGE_SIZE = 6;
 
@@ -182,7 +183,11 @@ export default function ProductCatalog({
 
   return (
     <div className="grid grid-cols-1 gap-6 py-6 md:grid-cols-[260px_minmax(0,1fr)]">
-      <aside className="h-fit rounded border border-gray-200 bg-white p-5">
+      <Reveal
+        as="aside"
+        amount={0.05}
+        className="h-fit rounded border border-gray-200 bg-white p-5"
+      >
         <div className="mb-5 flex min-h-9 items-center justify-between gap-3 border-b border-gray-200 pb-3">
           <h2 className="min-w-0 font-playfair text-lg font-semibold leading-6">
             Filter Products
@@ -229,7 +234,7 @@ export default function ProductCatalog({
             onChange={(event) => updateFilter("maxPrice", event.target.value)}
           />
         </label>
-      </aside>
+      </Reveal>
 
       <div className="min-w-0">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">

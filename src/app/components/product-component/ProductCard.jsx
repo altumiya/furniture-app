@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from "next/image";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,13 +10,18 @@ import Swal from 'sweetalert2'
 import 'sweetalert2/src/sweetalert2.scss'
 import axios from "axios";
 import 'izitoast/dist/css/iziToast.min.css';
+import { motion } from "framer-motion";
 let iziToast;
 if (typeof window !== 'undefined') {
   iziToast = require('izitoast');
 }
 
 
-export default function ProductCard({ productData = {}, path= "" }) {
+export default function ProductCard({
+  productData = {},
+  path = "",
+  animationDelay = 0,
+}) {
 
   let { name, _id, image, salePrice, price, parent, quantity, stock, slug, id } = productData;
   let dispatch = useDispatch();
@@ -131,16 +137,31 @@ export default function ProductCard({ productData = {}, path= "" }) {
 
   return (
     <>
-      <div data-scroll-reveal className="w-[100%] inline-flex px-2 pb-4">
+      <motion.div
+        initial={{ opacity: 0, y: 18 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.12 }}
+        whileHover={{ y: -5, transition: { duration: 0.25, ease: "easeOut" } }}
+        transition={{
+          duration: 0.6,
+          delay: animationDelay,
+          ease: [0.22, 1, 0.36, 1],
+        }}
+        className="group inline-flex w-full px-2 pb-4 motion-reduce:!opacity-100 motion-reduce:!transform-none"
+      >
         <div className="relative bg-white inline-flex items-stretch w-full h-full p-0 box-border">
-          <div className="relative shadow-lg rounded-lg min-w-full flex flex-col">
+          <div className="relative flex h-full w-full min-w-0 flex-col rounded-lg shadow-lg">
             <div className="relative">
-              <div className={"relative rounded-t-lg w-full bg-white text-ellipsis	overflow-hidden"}>
-                <Link href={`/product/${slug || _id}`} className="bg-no-repeat bg-cover inline-block my-0 mx-auto text-center ">
-                  <img
+              <div className="relative w-full overflow-hidden rounded-t-lg bg-white text-ellipsis">
+                <Link href={`/product/${slug || _id}`} className="mx-auto block w-full bg-cover bg-no-repeat text-center">
+                  <Image
                     src={path+image}
-                    alt=""
-                    className="w-full h-[250px] object-cover transform group-hover:scale-105 transition-transform duration-300"
+                    alt={name}
+                    width={640}
+                    height={500}
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
+                    unoptimized={path.startsWith("http://localhost:")}
+                    className="w-full h-[250px] object-cover transform transition-transform duration-300 ease-out group-hover:scale-105"
                   />
                 </Link>
               </div>
@@ -167,13 +188,14 @@ export default function ProductCard({ productData = {}, path= "" }) {
                 
                 <button
                   onClick={toggleWishlistItem}
-                  className="cursor-pointer flex items-center justify-center bg-gray-100 px-3 transition-colors duration-300 hover:bg-gray-200"
+                  className="cursor-pointer flex items-center justify-center rounded-sm border border-gray-200 px-3 transition-colors duration-300 hover:bg-gray-50"
                   aria-label="Toggle Wishlist"
+                  aria-pressed={isWishlisted}
                 >
                   {isWishlisted ? (
-                    <FaHeart className="text-red-500 text-lg" />
+                    <FaHeart className="text-orange-dim text-lg" />
                   ) : (
-                    <FaRegHeart className="text-gray-500 text-lg hover:text-red-500 transition-colors" />
+                    <FaRegHeart className="text-gray-500 text-lg transition-colors hover:text-orange-dim" />
                   )}
                 </button>
                 {
@@ -194,7 +216,7 @@ export default function ProductCard({ productData = {}, path= "" }) {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
     </>
   )

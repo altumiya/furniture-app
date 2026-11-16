@@ -1,7 +1,11 @@
 "use client";
 import Link from 'next/link';
+import Image from "next/image";
 import React, { useState, useEffect } from 'react'
 import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube, FaTelegram } from "react-icons/fa";
+import Reveal from "../animations/Reveal";
+import StaggerContainer from "../animations/StaggerContainer";
+import StaggerItem from "../animations/StaggerItem";
 
 const navFooterLinks = [
   { href: "/", label: "Home" },
@@ -56,17 +60,26 @@ export default function Footer() {
   }, []);
   return (
     
-    <footer className="bg-neutral-primary border-t border-gray-200 py-6">
+    <Reveal
+      as="footer"
+      amount={0.05}
+      duration={0.7}
+      className="bg-neutral-primary border-t border-gray-200 py-6"
+    >
       <div className="mx-auto lg:max-w-[1140px] px-4 py-4">
-        <div className="grid grid-cols-2 gap-8 px-4 py-6 md:grid-cols-[30%_auto_auto_30%]">
-          <div>
+        <StaggerContainer
+          className="grid grid-cols-1 gap-8 px-4 py-6 text-center sm:grid-cols-2 md:grid-cols-[30%_auto_auto_30%] md:text-left"
+          amount={0.1}
+          stagger={0.12}
+        >
+          <StaggerItem>
             <h2 className="mb-6 text-xl font-semibold font-playfair">
               Contact Us
             </h2>
             <p className='font-rubik text-sm/8 text-dark-gray tracking-wide'>Address: {companyDetails.address}</p>
             <p className='font-rubik text-sm/8 text-dark-gray tracking-wide'>Phone: {companyDetails.mobile}</p>
             <p className='font-rubik text-sm/8 text-dark-gray tracking-wide'>Email: {companyDetails.email}</p>
-            <div className="flex mt-4 lg:justify-start sm:justify-center gap-2 text-lg">
+            <Reveal as="div" delay={0.18} amount={0.1} className="mt-4 flex justify-center gap-2 text-lg md:justify-start">
               <Link href={'/'} className='border border-gray-200 hover:border-orange-dim hover:text-dim-orange rounded-full p-2'>
                 <FaFacebookF className='text-gray-400 hover:text-orange-dim' />
               </Link>
@@ -82,9 +95,9 @@ export default function Footer() {
               <Link href={'/'} className='border border-gray-200 hover:border-orange-dim hover:text-dim-orange rounded-full p-2'>
                 <FaTelegram className='text-gray-400 hover:text-orange-dim' />
               </Link>   
-            </div>
-          </div>
-          <div>
+            </Reveal>
+          </StaggerItem>
+          <StaggerItem>
             <h2 className="mb-6 text-xl font-semibold font-playfair">
               Information
             </h2>
@@ -105,8 +118,8 @@ export default function Footer() {
                 </Link>
               </li>
             </ul>
-          </div>
-          <div>
+          </StaggerItem>
+          <StaggerItem>
             <h2 className="mb-6 text-xl font-semibold font-playfair">
               My Account
             </h2>
@@ -132,8 +145,8 @@ export default function Footer() {
                 </Link>
               </li>
             </ul>
-          </div>
-          <div>
+          </StaggerItem>
+          <StaggerItem>
             <h2 className="mb-6 text-xl font-semibold font-playfair">
               Top Rated Products
             </h2>
@@ -142,7 +155,7 @@ export default function Footer() {
                 <div className="grid grid-cols-[30%_auto] gap-2">
                   <div className="simple_product_thumb">
                       <Link href="/product">
-                          <img src="https://wscubetech.co/Assignments/furniture/storage/app/public/uploads/images/products/1661762520951Group%201.jpg" alt="" />
+                          <Image src="https://wscubetech.co/Assignments/furniture/storage/app/public/uploads/images/products/1661762520951Group%201.jpg" alt="" width={100} height={100} sizes="100px" />
                       </Link>
                   </div>
                   <div className="simple_product_content">
@@ -164,8 +177,8 @@ export default function Footer() {
                 </div>
               </li>
             </ul>
-          </div>
-        </div>
+          </StaggerItem>
+        </StaggerContainer>
         
       </div>
       <div className="mx-auto lg:max-w-[1140px] px-4 py-4 border-y border-gray-200">
@@ -187,10 +200,12 @@ export default function Footer() {
           <span className='font-rubik text-sm/8 text-dark-gray tracking-wide mb-2'>
             All Rights Reserved By Furniture | © 2026
           </span>
-          <img src="/papyel2.png" alt="Payment Methos"/>
+          <Reveal as="div" delay={0.2} amount={0.1}>
+            <Image src="/papyel2.png" alt="Payment Methods" width={240} height={48} sizes="240px" />
+          </Reveal>
         </div>
       </div>
-    </footer>
+    </Reveal>
 
 
   )

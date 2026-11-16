@@ -1,16 +1,15 @@
 
-import Image from "next/image";
 import Slider from "../components/home-component/Slider";
 import Link from "next/link";
-import { IoEarthSharp } from "react-icons/io5";
-import { IoMdCheckmarkCircleOutline } from "react-icons/io";
-import { GoClock } from "react-icons/go";
+import AboutIcons from "../components/home-component/AboutIcons";
 import CustomerFeedback from "../components/home-component/CustomerFeedback";
 import Collections from "../components/home-component/Collections";
 import BestSellingProduct from "../components/home-component/BestSellingProduct";
 import { getProducts } from "./api-services/home.api";
 import ProductFeaturedTabs from "../components/home-component/ProductFeaturedTabs";
 import { getTestimonial } from "./api-services/home.api";
+import Reveal from "../components/animations/Reveal";
+import ParallaxImage from "../components/animations/ParallaxImage";
 export default async function Home() {
 const response = await getTestimonial();
   
@@ -20,87 +19,62 @@ const response = await getTestimonial();
   return (
     <>
       {/* Home Slider */}
-      <section>
+      <Reveal as="section" amount={0.1}>
         <Slider />
-      </section>
+      </Reveal>
 
       {/* Collection Section */}
-      <section className="bg-white border-b-1 border-gray-200">
+      <Reveal as="section" className="bg-white border-b-1 border-gray-200" amount={0.2}>
         <Collections />
-      </section>
+      </Reveal>
 
       {/* Product Featured tab section */}
-      <section>
+      <Reveal as="section" amount={0.12}>
         <ProductFeaturedTabs data={products} path={data?.path || ""} />
-      </section>
+      </Reveal>
 
       {/* Shopping banner */}
-      <section className="bg-[url(/Trends-banner.jpg)] bg-no-repeat bg-scroll bg-center bg-cover">
-        <div className="flex items-center h-[512px] max-w-[1000px] transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 mx-auto">
-            <div className="flex w-full">
-                <div className="">
-                  <h2 className="font-playfair text-5xl font-bold mb-4">New Trending Collection</h2>
-                  <p className="font-rubik text-base text-dark-gray mb-12">We Believe That Good Design is Always in Season</p>
+      <section className="relative isolate overflow-hidden">
+        <ParallaxImage src="/Trends-banner.jpg" alt="" />
+        <div className="relative z-10 mx-auto flex min-h-[320px] max-w-[1000px] items-center justify-center px-6 py-12 text-center sm:h-[512px] sm:min-h-0 sm:justify-start sm:py-0 sm:text-left">
+            <div className="flex w-full justify-center sm:justify-start">
+                <div className="w-full sm:w-auto">
+                  <Reveal as="h2" className="mb-4 font-playfair text-3xl font-bold sm:text-5xl" amount={0.3} duration={0.6}>
+                    New Trending Collection
+                  </Reveal>
+                  <Reveal as="p" className="mb-12 font-rubik text-base text-dark-gray" amount={0.3} delay={0.12} duration={0.6}>
+                    We Believe That Good Design is Always in Season
+                  </Reveal>
+                  <Reveal as="div" amount={0.3} delay={0.24} duration={0.6} className="flex justify-center sm:justify-start">
                   <Link
                     href="/product"
-                    className="inline-block uppercase text-Rubik font-base text-sm/12 text-orange-dim hover:text-white bg-transparent hover:bg-orange-dim border-2 border-orange-dim px-10"
+                    className="inline-block border-2 border-orange-dim bg-transparent px-10 text-sm/12 font-base uppercase text-orange-dim transition-colors duration-300 hover:bg-orange-dim hover:text-white"
                   >
                     Shop Now
                   </Link>
+                  </Reveal>
                 </div>
             </div>
         </div>     
       </section>
 
       {/* BestSelling slider */}
-      <section className="best-selling-slider">
+      <Reveal as="section" className="best-selling-slider" amount={0.12}>
         <BestSellingProduct data={data} />
-      </section>
+      </Reveal>
 
       {/* Shipping section */}
-      <section className="bg-gray-50 ">
-        <div className="py-8 px-4 mx-auto max-w-[1120px] sm:py-16 lg:px-6">
-          <div className="space-y-8 md:grid md:grid-cols-2 lg:grid-cols-3  md:gap-12 md:space-y-0">
-            <div className="text-center">
-              <div className="inline-flex justify-center items-center place-items-center mb-4 w-10 h-10 border-1 rounded-full bg-primary-100 lg:h-15 lg:w-15">
-                <IoEarthSharp className="text-gray-600 text-xl" />
-              </div>
-              <h3 className="mb-2 text-xl font-bold font-playfair text-center">Free Shipping</h3>
-              <p className="text-gray-500 font-rubik text-center">
-                Free shipping on all order
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="inline-flex justify-center items-center place-items-center mb-4 w-10 h-10 border-1 rounded-full bg-primary-100 lg:h-15 lg:w-15">
-                <IoMdCheckmarkCircleOutline className="text-gray-600 text-xl" />
-              </div>
-              <h3 className="mb-2 text-xl font-bold font-playfair text-center">Money Return</h3>
-              <p className="text-gray-500 font-rubik text-center">
-                Back guarantee under 7 days
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="inline-flex justify-center items-center place-items-center mb-4 w-10 h-10 border-1 rounded-full bg-primary-100 lg:h-15 lg:w-15">
-                <GoClock className="text-gray-600 text-xl" />
-              </div>
-              <h3 className="mb-2 text-xl font-bold font-playfair text-center">Online Support</h3>
-              <p className="text-gray-500 font-rubik text-center">
-                Support online 24 hours a day
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <AboutIcons />
 
       {/* Customer Feedback */}
-      <section>
+      <Reveal as="section" amount={0.15}>
         <div className='lg:max-w-[900px] container mx-auto py-12 px-6 text-center'>
           <CustomerFeedback data={testimonialArray}/>
         </div>
-      </section>
+      </Reveal>
 
       {/* Newsletter */}
-      <section className="bg-gray-50">
+      <Reveal as="section" className="bg-gray-50" amount={0.15}>
         <div className="py-8 px-4 mx-auto max-w-[1120px] sm:py-16 lg:px-6">
           <h2 className="text-2xl font-playfair font-bold mb-2 text-center">
               Our Newsletter
@@ -108,12 +82,12 @@ const response = await getTestimonial();
           <p className="text-gray-500 font-rubik text-center">
             Get E-mail updates about our latest shop and special offers.
           </p>
-          <div className="inline-flex justify-center items-center w-full py-8 ">
-            <form className="inline-flex font-rubik text-sm">
+          <div className="inline-flex w-full items-center justify-center py-8">
+            <form className="inline-flex w-full max-w-[33.3125rem] font-rubik text-sm">
               <input
               type="email"
               placeholder="Email address..."
-              className="flex-1 px-4 py-3 border-2 border-gray-200 outline-none w-100"
+              className="min-w-0 flex-1 border-2 border-gray-200 px-4 py-3 outline-none"
               fdprocessedid="rf2zy7"
               />
 
@@ -127,7 +101,7 @@ const response = await getTestimonial();
             </form>
           </div>
         </div>
-      </section>
+      </Reveal>
 
     </>
   );

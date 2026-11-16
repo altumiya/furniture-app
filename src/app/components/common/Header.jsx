@@ -1,6 +1,8 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
 import { IoIosSearch } from "react-icons/io";
 import { FaHeart, FaChevronDown } from "react-icons/fa";
 import { IoMdCart } from "react-icons/io";
@@ -36,13 +38,21 @@ const staticMenuItems = [
   { name: "Contact US", href: "/contact-us" },
 ];
 
+const subscribeToMount = () => () => {};
+const getClientMountSnapshot = () => true;
+const getServerMountSnapshot = () => false;
+
 export default function Header() {
   const [activeMenu, setActiveMenu] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  const isMounted = useSyncExternalStore(
+    subscribeToMount,
+    getClientMountSnapshot,
+    getServerMountSnapshot
+  );
   const [categoryMenus, setCategoryMenus] = useState([]);
   const menuItems = [
     staticMenuItems[0],
@@ -69,7 +79,6 @@ export default function Header() {
   );
 
   useEffect(() => {
-    setIsMounted(true);
     const savedToken = Cookies.get("token");
     if (savedToken && !token) {
       dispatch(setToken({ token: savedToken }));
@@ -125,7 +134,7 @@ export default function Header() {
       dispatch(fetchCartbyId());
       dispatch(fetchWishlist());
     }
-  }, [token]);
+  }, [dispatch, token]);
 
   // Fetch company profile data on mount
   useEffect(() => {
@@ -196,14 +205,17 @@ export default function Header() {
     <header className="w-full bg-white font-sans relative z-40">
       {/* Cart Popup */}
       <div
-        className={`fixed inset-0 bg-black/50 z-50 transition-opacity duration-300 ${isCartOpen
+        className={`pointer-events-none fixed inset-0 z-50 overflow-hidden ${isCartOpen ? "pointer-events-auto" : ""}`}
+      >
+      <div
+        className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${isCartOpen
           ? "opacity-100 pointer-events-auto"
           : "opacity-0 pointer-events-none"
           }`}
         onClick={() => setIsCartOpen(false)}
       />
       <div
-        className={`p-4 fixed top-0 right-0 h-full w-80 sm:w-96 bg-white z-50 shadow-xl transform transition-transform duration-300 ease-in-out 
+        className={`pointer-events-auto absolute top-0 right-0 h-full w-80 bg-white p-4 shadow-xl transform transition-transform duration-300 ease-in-out sm:w-96
             ${isCartOpen ? "translate-x-0" : "translate-x-full"}`}
       >
         <div className="py-2 flex justify-between items-center border-b border-gray-100">
@@ -219,7 +231,7 @@ export default function Header() {
         </div>
         {cart.length === 0 ? (
           <div className="grid grid-cols-1 items-center text-center mt-10">
-            <img src="/my-Order.jpg" alt="Not Found" className="mx-auto" />
+            <Image src="/my-Order.jpg" alt="Not Found" width={240} height={180} sizes="240px" className="mx-auto" />
             <p className="text-gray-400 mb-2 border-t border-b border-gray-100 py-4 mt-4">
               Your shopping cart is empty!
             </p>
@@ -255,6 +267,7 @@ export default function Header() {
             </div>
           </div>
         )}
+      </div>
       </div>
 
       {/* Top Bar */}
@@ -310,7 +323,7 @@ export default function Header() {
               href="/"
               className="text-lg font-semibold tracking-tight text-slate-900"
             >
-              <img src={adminContact.logo} alt="Company Logo" className="w-24 md:w-32 lg:w-40" />
+              {adminContact.logo && <Image src={adminContact.logo} alt="Company Logo" width={160} height={64} sizes="(max-width: 768px) 96px, 160px" unoptimized={adminContact.logo.startsWith("http://localhost:")} className="w-24 md:w-32 lg:w-40" />}
             </Link>
           </div>
 
@@ -367,7 +380,7 @@ export default function Header() {
               }`}
           >
             <Link href="/">
-              <img src={adminContact.logo} alt="Company Logo" className="w-24 object-contain py-2" />
+              {adminContact.logo && <Image src={adminContact.logo} alt="Company Logo" width={160} height={64} sizes="120px" unoptimized={adminContact.logo.startsWith("http://localhost:")} className="w-24 object-contain py-2" />}
             </Link>
           </div>
 
@@ -390,8 +403,16 @@ export default function Header() {
                   {menu.megaMenu && <span className="text-[9px] text-gray-400 ml-1">▼</span>}
                 </Link>
 
-                {activeMenu === index && menu.megaMenu && (
-                  <div className="absolute top-[100%] left-1/2 transform -translate-x-1/2 w-auto min-w-max bg-white shadow-xl rounded-b-lg border-t-2 border-orange-dim p-6 flex gap-8 z-50">
+                <AnimatePresence>
+                  {activeMenu === index && menu.megaMenu && (
+                  <motion.div
+                    key={`mega-menu-${index}`}
+                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 6, scale: 0.99 }}
+                    transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                    className="absolute top-[100%] left-1/2 z-50 flex w-auto min-w-max -translate-x-1/2 gap-8 rounded-b-lg border-t-2 border-orange-dim bg-white p-6 shadow-xl motion-reduce:!transform-none"
+                  >
                     {menu.megaMenu.map((column, i) => (
                       <div key={i} className="min-w-[160px]">
                         {column.title && (
@@ -415,8 +436,9 @@ export default function Header() {
                         </ul>
                       </div>
                     ))}
-                  </div>
-                )}
+                  </motion.div>
+                  )}
+                </AnimatePresence>
               </li>
             ))}
           </ul>
@@ -467,8 +489,15 @@ export default function Header() {
                           }`}
                       />
                     </button>
+                    <AnimatePresence initial={false}>
                     {openMenu === index && (
-                      <ul className="pl-4 mt-2 space-y-2 normal-case text-xs font-medium text-gray-600 tracking-normal">
+                      <motion.ul
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                        className="mt-2 space-y-2 overflow-hidden pl-4 text-xs font-medium normal-case tracking-normal text-gray-600 motion-reduce:!transform-none"
+                      >
                         {menu.megaMenu.map((col, i) => (
                           <div key={i} className="mb-3">
                             {col.title && (
@@ -491,8 +520,9 @@ export default function Header() {
                             ))}
                           </div>
                         ))}
-                      </ul>
+                      </motion.ul>
                     )}
+                    </AnimatePresence>
                   </>
                 ) : (
                   <Link
@@ -521,7 +551,7 @@ function CartData({ item }) {
         href={`/`}
         className="flex items-center justify-center bg-gray-100 rounded-sm p-1"
       >
-        <img src={productImage} alt={productName} className="w-full h-auto object-contain max-h-20" />
+        <Image src={productImage} alt={productName} width={120} height={80} sizes="120px" unoptimized={productImage.startsWith("http://localhost:")} className="w-full h-auto max-h-20 object-contain" />
       </Link>
       <div className="pr-6">
         <div className="mb-1">

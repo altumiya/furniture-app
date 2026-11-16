@@ -1,28 +1,26 @@
 "use client"
-import React, { useState } from "react";
-import { FaRegHeart } from "react-icons/fa";
+import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 
 import "swiper/css";
 import "swiper/css/navigation";
-import Link from "next/link";
 import ProductCard from "../product-component/ProductCard";
 
 export default function BestSellingProduct({data}) {
-    let [product, setProduct] = useState(data.data || []) 
-    let [path, setPath] = useState(data.path ||"")   
+    const product = data.data || [];
+    const path = data.path || "";
      
   return (
     <>
       <div className="w-full max-w-[1140px] mx-auto px-2 py-10">
-        <div className="flex items-center gap-1 mb-8">
-          <h2 className="text-3xl font-playfair font-bold">
+        <div className="mb-8 flex flex-wrap items-center justify-center gap-2 text-center sm:flex-nowrap sm:justify-start sm:text-left">
+          <h2 className="w-full text-2xl font-playfair font-bold sm:w-auto sm:text-3xl">
             Bestselling Products
           </h2>
-          <div className="h-[2px] bg-gray-200 flex-1 mx-5"></div>
-          <div className="flex gap-2  ">
+          <div className="hidden h-[2px] flex-1 bg-gray-200 sm:mx-5 sm:block"></div>
+          <div className="flex basis-full justify-center gap-2 sm:basis-auto">
             <button className="prev-btn flex items-end justify-center text-xl font-rubik">
               <MdKeyboardArrowLeft />
             </button>
@@ -59,10 +57,10 @@ export default function BestSellingProduct({data}) {
         >
             
             {
-                product?.map((obj, index)=>{
+                product.map((obj, index)=>{
                   return(
                    <SwiperSlide key={obj.id || index}>
-                        <ProductCard  path={path} productData={obj}/>
+                        <ProductCard path={path} productData={obj} animationDelay={index * 0.1} />
                    </SwiperSlide>
                     )
                 })

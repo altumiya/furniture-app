@@ -1,6 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { motion } from "framer-motion";
 import { useParams } from 'next/navigation';
 import { FaRegHeart, FaHeart } from "react-icons/fa";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
@@ -151,7 +152,12 @@ export default function SingleProduct({ pdata = [] }) {
             <div className="min-h-screen bg-white font-rubik" key={product._id}>
                 
                 {/* Header / Breadcrumb */}
-                <div className='grid grid-cols-1 place-items-center border-b border-gray-200 px-4 py-6'>
+                <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                    className='grid grid-cols-1 place-items-center border-b border-gray-200 px-4 py-6 motion-reduce:!transform-none'
+                >
                     <h2 className='font-playfair font-semibold text-4xl'>{product.name}</h2>
                     <nav className="flex mt-3" aria-label="Breadcrumb">
                         <ol className="p-3 px-6 inline-flex items-center space-x-1 md:space-x-2">
@@ -166,48 +172,70 @@ export default function SingleProduct({ pdata = [] }) {
                             </li> 
                         </ol>
                     </nav>
-                </div>
+                </motion.div>
 
                 {/* Main Product Section */}
                 <div className="max-w-[1120px] mx-auto px-4 sm:px-6 lg:px-2 py-12">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
                         
                         {/* Product Image Section */}
-                        <div className="flex flex-col gap-4">
+                        <motion.div
+                            initial={{ opacity: 0, x: -18 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true, amount: 0.15 }}
+                            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                            className="flex flex-col gap-4 motion-reduce:!transform-none"
+                        >
                             <div className="bg-gray-100 rounded-lg overflow-hidden h-96 md:h-[500px] flex items-center justify-center relative group border border-gray-100">
-                                <img 
+                                <motion.img
+                                    key={selectedImage}
                                     src={imagePath + selectedImage} 
                                     alt={product.name}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 0.3 }}
                                     className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                                 />
                             </div>
                             
                             {/* Image Thumbnails (Dynamically mapped if gallery exists) */}
                             <div className="flex gap-3 overflow-x-auto pb-2">
-                                <button
+                                <motion.button
                                     type="button"
                                     onClick={() => setSelectedImage(product.image)}
+                                    whileHover={{ scale: 1.04 }}
+                                    whileTap={{ scale: 0.97 }}
+                                    transition={{ duration: 0.16 }}
                                     className={`w-20 h-20 bg-gray-200 border-2 rounded-lg cursor-pointer flex-shrink-0 ${selectedImage === product.image ? "border-orange-dim" : "border-transparent hover:border-orange-dim"}`}
                                     aria-label="Show main product image"
                                 >
                                     <img src={imagePath + product.image} alt="Main thumb" className="w-full h-full object-cover rounded-lg" />
-                                </button>
+                                </motion.button>
                                 {product.gallery?.map((imgStr, idx) => (
-                                    <button
+                                    <motion.button
                                         type="button"
                                         key={imgStr || idx}
                                         onClick={() => setSelectedImage(imgStr)}
+                                        whileHover={{ scale: 1.04 }}
+                                        whileTap={{ scale: 0.97 }}
+                                        transition={{ duration: 0.16 }}
                                         className={`w-20 h-20 bg-gray-200 rounded-lg cursor-pointer border-2 transition flex-shrink-0 ${selectedImage === imgStr ? "border-orange-dim" : "border-transparent hover:border-orange-dim"}`}
                                         aria-label={`Show gallery image ${idx + 1}`}
                                     >
                                         <img src={imagePath + imgStr} alt={`Gallery ${idx}`} className="w-full h-full object-cover rounded-lg" />
-                                    </button>
+                                    </motion.button>
                                 ))}
                             </div>
-                        </div>
+                        </motion.div>
 
                         {/* Product Details Section */}
-                        <div className="flex flex-col gap-4"> 
+                        <motion.div
+                            initial={{ opacity: 0, x: 18 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true, amount: 0.15 }}
+                            transition={{ duration: 0.55, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+                            className="flex flex-col gap-4 motion-reduce:!transform-none"
+                        >
                             <div>
                                 <h1 className="text-2xl font-bold font-playfair text-gray-900 mb-2">
                                     {product.name}
@@ -293,7 +321,7 @@ export default function SingleProduct({ pdata = [] }) {
                                     )}
                                 </button>
                             </div>
-                        </div>
+                        </motion.div>
                     </div>
                 </div>
                 
