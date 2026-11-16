@@ -1,6 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { useParams } from 'next/navigation';
 import { FaRegHeart, FaHeart } from "react-icons/fa";
@@ -15,6 +16,7 @@ import ProductCard from './ProductCard'; // Assuming this is in the same folder
 
 // --- IziToast Imports ---
 import 'izitoast/dist/css/iziToast.min.css';
+const MotionImage = motion(Image);
 let iziToast;
 if (typeof window !== 'undefined') {
   iziToast = require('izitoast');
@@ -187,10 +189,14 @@ export default function SingleProduct({ pdata = [] }) {
                             className="flex flex-col gap-4 motion-reduce:!transform-none"
                         >
                             <div className="bg-gray-100 rounded-lg overflow-hidden h-96 md:h-[500px] flex items-center justify-center relative group border border-gray-100">
-                                <motion.img
+                                <MotionImage
                                     key={selectedImage}
                                     src={imagePath + selectedImage} 
                                     alt={product.name}
+                                    width={1200}
+                                    height={1200}
+                                    sizes="(max-width: 768px) 100vw, 50vw"
+                                    unoptimized={imagePath.startsWith("http://localhost:")}
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     transition={{ duration: 0.3 }}
@@ -209,7 +215,15 @@ export default function SingleProduct({ pdata = [] }) {
                                     className={`w-20 h-20 bg-gray-200 border-2 rounded-lg cursor-pointer flex-shrink-0 ${selectedImage === product.image ? "border-orange-dim" : "border-transparent hover:border-orange-dim"}`}
                                     aria-label="Show main product image"
                                 >
-                                    <img src={imagePath + product.image} alt="Main thumb" className="w-full h-full object-cover rounded-lg" />
+                                    <Image
+                                        src={imagePath + product.image}
+                                        alt={`${product.name} thumbnail`}
+                                        width={80}
+                                        height={80}
+                                        sizes="80px"
+                                        unoptimized={imagePath.startsWith("http://localhost:")}
+                                        className="h-full w-full rounded-lg object-cover"
+                                    />
                                 </motion.button>
                                 {product.gallery?.map((imgStr, idx) => (
                                     <motion.button
@@ -222,7 +236,15 @@ export default function SingleProduct({ pdata = [] }) {
                                         className={`w-20 h-20 bg-gray-200 rounded-lg cursor-pointer border-2 transition flex-shrink-0 ${selectedImage === imgStr ? "border-orange-dim" : "border-transparent hover:border-orange-dim"}`}
                                         aria-label={`Show gallery image ${idx + 1}`}
                                     >
-                                        <img src={imagePath + imgStr} alt={`Gallery ${idx}`} className="w-full h-full object-cover rounded-lg" />
+                                        <Image
+                                            src={imagePath + imgStr}
+                                            alt={`${product.name} gallery image ${idx + 1}`}
+                                            width={80}
+                                            height={80}
+                                            sizes="80px"
+                                            unoptimized={imagePath.startsWith("http://localhost:")}
+                                            className="h-full w-full rounded-lg object-cover"
+                                        />
                                     </motion.button>
                                 ))}
                             </div>
